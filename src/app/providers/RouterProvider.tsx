@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <ProtectedRoute />,
+    element: <ProtectedRoute isAuthorized={false} />,
     children: [
       {
         path: '/favorites',
