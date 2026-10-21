@@ -1,1 +1,7 @@
-export type { Location, City, Offer } from './offer.type';
+export type {
+  Location,
+  City,
+  Offer,
+  OfferDetails,
+  CardVariant,
+} from './offer.type';

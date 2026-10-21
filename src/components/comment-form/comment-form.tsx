@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+
+type CommentFormData = {
+  rating: number;
+  review: string;
+};
 
 const ratings = [
   { value: 5, id: '5-stars', title: 'perfect' },
@@ -9,16 +14,22 @@ const ratings = [
 ];
 
 export const CommentForm = () => {
-  const [rating, setRating] = useState<number | null>(null);
-  const [review, setReview] = useState('');
-  const canSubmit = rating !== null && review.trim().length >= 50;
+  const { register, handleSubmit, watch } = useForm<CommentFormData>({
+    defaultValues: { review: '' },
+  });
+  const rating = watch('rating');
+  const review = watch('review');
+  const canSubmit = Boolean(rating) && review.trim().length >= 50;
 
   return (
     <form
       className="reviews__form form"
       action="#"
       method="post"
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleSubmit(() => undefined)();
+      }}
     >
       <label className="reviews__label form__label" htmlFor="review">
         Your review
@@ -28,12 +39,13 @@ export const CommentForm = () => {
           <span key={id}>
             <input
               className="form__rating-input visually-hidden"
-              name="rating"
               value={value}
               id={id}
               type="radio"
-              checked={rating === value}
-              onChange={() => setRating(value)}
+              {...register('rating', {
+                required: true,
+                valueAsNumber: true,
+              })}
             />
             <label
               htmlFor={id}
@@ -50,10 +62,8 @@ export const CommentForm = () => {
       <textarea
         className="reviews__textarea form__textarea"
         id="review"
-        name="review"
         placeholder="Tell how was your stay, what you like and what can be improved"
-        value={review}
-        onChange={(event) => setReview(event.target.value)}
+        {...register('review', { required: true, minLength: 50 })}
       />
       <div className="reviews__button-wrapper">
         <p className="reviews__help">

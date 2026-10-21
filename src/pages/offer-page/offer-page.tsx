@@ -1,9 +1,9 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { CommentForm } from '@/components/comment-form';
-import type { Offer } from '@/types';
+import type { OfferDetails } from '@/types';
 
 type OfferPageProps = {
-  offers: Offer[];
+  offers: OfferDetails[];
 };
 
 export const OfferPage = ({ offers }: OfferPageProps) => {

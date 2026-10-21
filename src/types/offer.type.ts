@@ -12,15 +12,18 @@ export type City = {
 export type Offer = {
   id: string;
   title: string;
-  type: 'apartment' | 'room' | 'house' | 'hotel';
+  type: string;
+  city: City;
+  location: Location;
   price: number;
   rating: number;
   isPremium: boolean;
   isFavorite: boolean;
   previewImage: string;
+};
+
+export type OfferDetails = Offer & {
   images: string[];
-  city: City;
-  location: Location;
   bedrooms: number;
   maxAdults: number;
   goods: string[];
@@ -31,3 +34,5 @@ export type Offer = {
     isPro: boolean;
   };
 };
+
+export type CardVariant = 'cities' | 'favorites' | 'near-places';

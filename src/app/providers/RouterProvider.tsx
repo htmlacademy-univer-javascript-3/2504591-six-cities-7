@@ -6,13 +6,17 @@ import MainPage from '@/pages/main-page';
 import { LoginPage } from '@/pages/login';
 import { OfferPage } from '@pages/offer-page';
 import { NotFoundPage } from '@/pages/not-found';
-import type { Offer } from '@/types';
+import type { Offer, OfferDetails } from '@/types';
 
 type AppRouterProviderProps = {
   offers: Offer[];
+  offerDetails: OfferDetails[];
 };
 
-export const AppRouterProvider = ({ offers }: AppRouterProviderProps) => {
+export const AppRouterProvider = ({
+  offers,
+  offerDetails,
+}: AppRouterProviderProps) => {
   const router = createBrowserRouter([
     {
       element: <PublicOnlyRoute />,
@@ -27,7 +31,7 @@ export const AppRouterProvider = ({ offers }: AppRouterProviderProps) => {
         },
         {
           path: '/offer/:id',
-          element: <OfferPage offers={offers} />,
+          element: <OfferPage offers={offerDetails} />,
         },
       ],
     },
