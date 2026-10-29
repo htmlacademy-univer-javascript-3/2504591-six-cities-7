@@ -1,16 +1,18 @@
-import { OfferCard } from '@/components/offer-card';
+import { Link } from 'react-router-dom';
+import { OfferList } from '@/components/offer-list';
+import type { Offer } from '@/types';
 
 export type MainPageProps = {
-  offerCount: number;
+  offers: Offer[];
 };
 
-const MainPage = ({ offerCount }: MainPageProps) => (
+const MainPage = ({ offers }: MainPageProps) => (
   <div className="page page--gray page--main">
     <header className="header">
       <div className="container">
         <div className="header__wrapper">
           <div className="header__left">
-            <a className="header__logo-link header__logo-link--active">
+            <Link className="header__logo-link header__logo-link--active" to="/">
               <img
                 className="header__logo"
                 src="img/logo.svg"
@@ -18,26 +20,26 @@ const MainPage = ({ offerCount }: MainPageProps) => (
                 width="81"
                 height="41"
               />
-            </a>
+            </Link>
           </div>
           <nav className="header__nav">
             <ul className="header__nav-list">
               <li className="header__nav-item user">
-                <a
+                <Link
                   className="header__nav-link header__nav-link--profile"
-                  href="#"
+                  to="/favorites"
                 >
                   <div className="header__avatar-wrapper user__avatar-wrapper"></div>
                   <span className="header__user-name user__name">
                     Oliver.conner@gmail.com
                   </span>
                   <span className="header__favorite-count">3</span>
-                </a>
+                </Link>
               </li>
               <li className="header__nav-item">
-                <a className="header__nav-link" href="#">
+                <Link className="header__nav-link" to="/login">
                   <span className="header__signout">Sign out</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -87,7 +89,7 @@ const MainPage = ({ offerCount }: MainPageProps) => (
         <div className="cities__places-container container">
           <section className="cities__places places">
             <h2 className="visually-hidden">Places</h2>
-            <b className="places__found">312 places to stay in Amsterdam</b>
+            <b className="places__found">{offers.length} places to stay</b>
             <form className="places__sorting" action="#" method="get">
               <span className="places__sorting-caption">Sort by</span>
               <span className="places__sorting-type" tabIndex={0}>
@@ -114,11 +116,10 @@ const MainPage = ({ offerCount }: MainPageProps) => (
                 </li>
               </ul>
             </form>
-            <div className="cities__places-list places__list tabs__content">
-              {Array.from({ length: offerCount }, (_, index) => (
-                <OfferCard key={index} />
-              ))}
-            </div>
+            <OfferList
+              offers={offers}
+              className="cities__places-list places__list tabs__content"
+            />
           </section>
           <div className="cities__right-section">
             <section className="cities__map map"></section>
