@@ -1,24 +1,94 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CommentForm } from '@/components/comment-form';
 import { ReviewsList } from '@/components/reviews-list';
 import { OfferList } from '@/components/offer-list';
 import Map from '@/components/map';
+import { Spinner } from '@/components/spinner/spinner';
+import { api } from '@/app/store';
 import type { Offer, OfferDetails, Review } from '@/types';
+import { useEffect, useState } from 'react';
 
-type OfferPageProps = {
-  offers: OfferDetails[];
+type OfferPageData = {
+  offer: OfferDetails | null;
   reviews: Review[];
   nearPlaces: Offer[];
+  error: string | null;
 };
 
-export const OfferPage = ({ offers, reviews, nearPlaces }: OfferPageProps) => {
+export const OfferPage = () => {
   const { id } = useParams();
-  const offer = offers.find((item) => item.id === id);
+  const [pageData, setPageData] = useState<OfferPageData>({
+    offer: null,
+    reviews: [],
+    nearPlaces: [],
+    error: null,
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!offer) {
-    return <Navigate to="/" replace />;
+  useEffect(() => {
+    let isActive = true;
+
+    const loadOfferPage = async () => {
+      setIsLoading(true);
+      setPageData({ offer: null, reviews: [], nearPlaces: [], error: null });
+
+      try {
+        if (!id) {
+          throw new Error('Предложение не найдено.');
+        }
+
+        const encodedId = encodeURIComponent(id);
+        const [offerResponse, reviewsResponse, nearbyResponse] = await Promise.all([
+          api.get<OfferDetails>(`/offers/${encodedId}`),
+          api.get<Review[]>(`/comments/${encodedId}`),
+          api.get<Offer[]>(`/offers/${encodedId}/nearby`),
+        ]);
+
+        if (isActive) {
+          setPageData({
+            offer: offerResponse.data,
+            reviews: reviewsResponse.data,
+            nearPlaces: nearbyResponse.data,
+            error: null,
+          });
+        }
+      } catch {
+        if (isActive) {
+          setPageData({
+            offer: null,
+            reviews: [],
+            nearPlaces: [],
+            error: 'Не удалось загрузить данные предложения. Попробуйте позже.',
+          });
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadOfferPage();
+
+    return () => {
+      isActive = false;
+    };
+  }, [id]);
+
+  if (isLoading) {
+    return <Spinner message="Загрузка предложения..." />;
   }
 
+  if (pageData.error || !pageData.offer) {
+    return (
+      <div className="app-status" role="alert">
+        <p>{pageData.error ?? 'Предложение не найдено.'}</p>
+        <Link to="/">Вернуться к списку предложений</Link>
+      </div>
+    );
+  }
+
+  const { offer, reviews, nearPlaces } = pageData;
   return (
     <div className="page">
       <header className="header">

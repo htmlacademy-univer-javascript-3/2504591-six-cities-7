@@ -1,19 +1,26 @@
 import { Link } from 'react-router-dom';
 import { OfferList } from '@/components/offer-list';
-import Map from '@/components/map';
+import MapView from '@/components/map';
 import { CityList } from '@/components/city-list';
 import { SortOptions, type SortType } from '@/components/sort-options';
-import { cities } from '@/mocks/cities';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemo, useState } from 'react';
 import { changeCityName } from '@/app/store/action';
-import { selectCity, selectCityOffers } from '@/app/store/selector';
+import { selectCity, selectCityOffers, selectOffers } from '@/app/store/selector';
 import type { AppDispatch } from '@/app/store';
+import type { City } from '@/types';
 
 const MainPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const cityName = useSelector(selectCity);
+  const allOffers = useSelector(selectOffers);
   const offers = useSelector(selectCityOffers);
+  const cities = Array.from(
+    allOffers.reduce((cityByName, offer) => {
+      cityByName.set(offer.city.name, offer.city);
+      return cityByName;
+    }, new Map<string, City>()).values(),
+  );
   const [sortType, setSortType] = useState<SortType>('Popular');
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
   const city = cities.find((item) => item.name === cityName);
@@ -102,7 +109,7 @@ const MainPage = () => {
               />
             </section>
             <div className="cities__right-section">
-              <Map
+              <MapView
                 city={city}
                 offers={offers}
                 activeOfferId={activeOfferId}

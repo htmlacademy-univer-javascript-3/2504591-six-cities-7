@@ -6,21 +6,11 @@ import MainPage from '@/pages/main-page';
 import { LoginPage } from '@/pages/login';
 import { OfferPage } from '@pages/offer-page';
 import { NotFoundPage } from '@/pages/not-found';
-import type { Offer, OfferDetails, Review } from '@/types';
+import { useSelector } from 'react-redux';
+import { selectOffers } from '@/app/store/selector';
 
-type AppRouterProviderProps = {
-  offers: Offer[];
-  offerDetails: OfferDetails[];
-  reviews: Review[];
-  nearPlaces: Offer[];
-};
-
-export const AppRouterProvider = ({
-  offers,
-  offerDetails,
-  reviews,
-  nearPlaces,
-}: AppRouterProviderProps) => {
+export const AppRouterProvider = () => {
+  const offers = useSelector(selectOffers);
   const router = createBrowserRouter([
     {
       element: <PublicOnlyRoute />,
@@ -35,13 +25,7 @@ export const AppRouterProvider = ({
         },
         {
           path: '/offer/:id',
-          element: (
-            <OfferPage
-              offers={offerDetails}
-              reviews={reviews}
-              nearPlaces={nearPlaces}
-            />
-          ),
+          element: <OfferPage />,
         },
       ],
     },
@@ -51,9 +35,7 @@ export const AppRouterProvider = ({
         {
           path: '/favorites',
           element: (
-            <FavoritesPage
-              offers={offers.filter((offer) => offer.isFavorite)}
-            />
+            <FavoritesPage offers={offers.filter((offer) => offer.isFavorite)} />
           ),
         },
       ],
